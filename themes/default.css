@@ -1,0 +1,44 @@
+#changeloggr {
+    --bg: #FFF;
+    --text: #2c2c2c;
+    --log-bg: #F5F5F5;
+    --log-text: #2c2c2c;
+    --log-links: #2a01ac;
+}
+
+#changeloggr {
+    background-color: var(--bg);
+    color: var(--dark-gray);
+    width: 1000px;
+    max-width: 90vw;
+    height: 800px;
+    max-height: 90vh;
+    padding: 0;
+    border: 0;
+    box-shadow: 0 0 15px 0px rgba(0, 0, 0, 0.6);
+}
+#changeloggr::backdrop {
+  background: rgb(0 0 0 / 0.5);
+}
+#changeloggr h1 {
+    margin: 0 0 10px;
+}
+#changeloggr .close-button {
+    cursor: pointer;
+    position: absolute;
+    top: 5px;
+    right: 15px;
+    border: none;
+    background: none;
+    font-size: 200%;
+}
+#changeloggr .content {
+    width: 100%;
+    box-sizing: border-box;
+    background-color: var(--log-bg);
+    color: var(--log-text);
+    padding: 10px 20px;
+}
+#changeloggr a {
+    color: var(--log-links);
+}

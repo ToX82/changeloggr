@@ -1,10 +1,42 @@
-// Funzione per rimuovere changelogHash dal localStorage
+/**
+ * Loads the setup process asynchronously, when the DOM is completely loaded
+ */
+document.addEventListener('DOMContentLoaded', function () {
+    if (document.cookie || Object.keys(localStorage).length > 0) {
+        setup()
+            .then(function (updated) {
+                if (updated) {
+                    var modal = document.getElementById("changeloggr");
+                    var closeModal = modal.querySelector(".close-button");
+
+                    modal.showModal();
+                    closeModal.addEventListener("click", function () {
+                        modal.close();
+                    });
+                }
+            })
+            .catch(function (error) {
+                console.error("Error loading resources:", error);
+            });
+    }
+});
+
+/**
+ * Removes the 'changelogHash' item from the localStorage.
+ *
+ * @param {string} paramName - The name of the parameter.
+ * @return {undefined} This function does not return a value.
+ */
 function removeChangelogHash() {
     localStorage.removeItem('changelogHash');
 }
 
-// Funzione setup() con le modifiche
-function setup() {
+/**
+ * Executes the setup process.
+ *
+ * @return {Promise<boolean>} A Promise that resolves to a boolean indicating whether the setup process was successful.
+ */
+async function setup() {
     var scriptPath = getScriptPath();
     var path = scriptPath.replace(/[^/]*$/, '');
     var file = getURLParameter(scriptPath, 'file');
@@ -66,9 +98,11 @@ function setup() {
     });
 }
 
-// Rest of the code remains the same...
-
-// Funzione per ottenere il percorso dello script corrente
+/**
+ * Retrieves the path of the current script.
+ *
+ * @return {string} The path of the current script.
+ */
 function getScriptPath() {
     var scripts = document.getElementsByTagName('script');
 
@@ -82,7 +116,13 @@ function getScriptPath() {
     }
 }
 
-// Funzione per ottenere il valore di un parametro URL
+/**
+ * Retrieves the value of a URL parameter.
+ *
+ * @param {string} scriptPath - The URL path containing the parameter.
+ * @param {string} name - The name of the parameter to retrieve.
+ * @return {string|boolean} - The value of the parameter if found, or false if not found.
+ */
 function getURLParameter(scriptPath, name) {
     var set = scriptPath.split(name + '=');
     if (set[1]) {
@@ -92,7 +132,12 @@ function getURLParameter(scriptPath, name) {
     }
 }
 
-// Funzione per creare un hash di una stringa (contenuto del changelog in questo caso)
+/**
+ * Generates a hash value for the given input string.
+ *
+ * @param {string} input - The string to be hashed.
+ * @return {string} The hash value of the input string.
+ */
 function hashString(input) {
     var hash = 0;
     if (input.length === 0) return hash;
@@ -104,7 +149,11 @@ function hashString(input) {
     return hash.toString();
 }
 
-// Funzione per caricare la libreria marked
+/**
+ * Loads the Marked library asynchronously.
+ *
+ * @return {Promise} A promise that resolves when the Marked library is loaded successfully, and rejects if there is an error.
+ */
 function loadMarkedLibrary() {
     return new Promise(function (resolve, reject) {
         var markedScript = document.createElement('script');
@@ -115,7 +164,12 @@ function loadMarkedLibrary() {
     });
 }
 
-// Funzione per ottenere il tema dall'URL o utilizzare il tema predefinito
+/**
+ * Retrieves the theme from the given URL script path - if not specified, the default theme is used.
+ *
+ * @param {string} scriptPath - The URL script path to retrieve the theme from.
+ * @return {string} The retrieved theme from the script path.
+ */
 function getThemeFromURL(scriptPath) {
     var theme = 'default';
     if (getURLParameter(scriptPath, 'theme')) {
@@ -124,7 +178,13 @@ function getThemeFromURL(scriptPath) {
     return theme;
 }
 
-// Funzione per creare un elemento link stylesheet per il tema specificato
+/**
+ * Creates a stylesheet link element with the specified path and theme
+ *
+ * @param {string} path - The path to the stylesheet.
+ * @param {string} theme - The theme for the stylesheet.
+ * @return {HTMLLinkElement} The created stylesheet link element.
+ */
 function createStylesheetLink(path, theme) {
     var minified = (path.indexOf('.min') > -1) ? '.min' : '';
     var stylesheet = document.createElement('link');
@@ -132,24 +192,3 @@ function createStylesheetLink(path, theme) {
     stylesheet.setAttribute('href', path + 'themes/' + theme + minified + '.css');
     return stylesheet;
 }
-
-// Invoca la funzione setup() quando il DOM è completamente caricato
-document.addEventListener('DOMContentLoaded', function () {
-    if (document.cookie || Object.keys(localStorage).length > 0) {
-        setup()
-            .then(function (updated) {
-                if (updated) {
-                    var modal = document.getElementById("changeloggr");
-                    var closeModal = modal.querySelector(".close-button");
-
-                    modal.showModal();
-                    closeModal.addEventListener("click", function () {
-                        modal.close();
-                    });
-                }
-            })
-            .catch(function (error) {
-                console.error("Error loading resources:", error);
-            });
-    }
-});

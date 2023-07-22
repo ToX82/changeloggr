@@ -26,9 +26,15 @@ function setup() {
         fetch(path + 'template.html'),
         fetch(file)
     ]).then(function (responses) {
-        return Promise.all(responses.map(function (response) {
-            return response.text();
-        }));
+        var markedLoaded = responses[0];
+        var templateResponse = responses[1];
+        var changelogResponse = responses[2];
+
+        return Promise.all([
+            markedLoaded,
+            templateResponse.text(),
+            changelogResponse.text()
+        ]);
     }).then(function (results) {
         var markedLoaded = results[0];
         var templateHtml = results[1];

@@ -6,7 +6,7 @@ function removeChangelogHash() {
 // Funzione setup() con le modifiche
 function setup() {
     var scriptPath = getScriptPath();
-    var path = scriptPath.replace(/[^\/]*$/, '');
+    var path = scriptPath.replace(/[^/]*$/, '');
     var file = getURLParameter(scriptPath, 'file');
 
     if (!file) {
@@ -26,22 +26,16 @@ function setup() {
         fetch(path + 'template.html'),
         fetch(file)
     ]).then(function (responses) {
-        var markedLoaded = responses[0];
-        var templateResponse = responses[1];
-        var changelogResponse = responses[2];
-
-        return Promise.all([
-            markedLoaded,
-            templateResponse.text(),
-            changelogResponse.text()
-        ]);
+        return Promise.all(responses.map(function (response) {
+            return response.text();
+        }));
     }).then(function (results) {
         var markedLoaded = results[0];
         var templateHtml = results[1];
         var changelogContent = results[2];
         var element = document.createElement('div');
         element.innerHTML = templateHtml;
-        document.getElementsByTagName('body')[0].appendChild(element);
+        document.body.appendChild(element);
 
         // Parse the changelog file using marked
         var changelogContentHtml = marked.parse(changelogContent);

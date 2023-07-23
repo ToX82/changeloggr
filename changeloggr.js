@@ -5,14 +5,19 @@ document.addEventListener('DOMContentLoaded', async () => {
     const scriptPath = getScriptPath();
     const fileUrl = getURLParameter(scriptPath, 'file');
 
+    if (!fileUrl) {
+        throw new Error('No changelog parameter specified');
+    }
+
     try {
         const size = await getFileSize(fileUrl);
         const changelogHash = localStorage.getItem('changelogHash');
 
-        if (!changelogHash || changelogHash !== size.toString()) {
-            const hasUpdated = await setup();
+        if (!changelogHash || changelogHash != size.toString()) {
+            localStorage.setItem('changelogHash', size.toString());
+            const hasLoaded = await setup();
 
-            if (hasUpdated) {
+            if (hasLoaded) {
                 const modal = document.getElementById('changeloggr');
                 const closeModal = modal.querySelector('.close-button');
 
@@ -37,11 +42,6 @@ async function setup() {
     const path = scriptPath.replace(/[^/]*$/, '');
     const file = getURLParameter(scriptPath, 'file');
 
-    if (!file) {
-        console.log('No changelog parameter specified');
-        throw new Error('No changelog parameter specified');
-    }
-
     try {
         await loadMarkedLibrary();
         const theme = getThemeFromURL(scriptPath);
@@ -59,17 +59,10 @@ async function setup() {
         document.body.appendChild(element);
 
         const changelogContentHtml = marked.parse(changelogResponse);
-        const changelogHash = hashString(changelogResponse);
-        const storedHash = localStorage.getItem('changelogHash');
-        const hasUpdated = changelogHash !== storedHash;
+        const contentElement = document.querySelector('.content');
+        contentElement.innerHTML = changelogContentHtml;
 
-        if (hasUpdated) {
-            localStorage.setItem('changelogHash', changelogHash);
-            const contentElement = document.querySelector('.content');
-            contentElement.innerHTML = changelogContentHtml;
-        }
-
-        return hasUpdated;
+        return true;
     } catch (error) {
         console.error('Error loading resources:', error);
         return false;

@@ -1,25 +1,80 @@
 /**
  * Loads the setup process asynchronously, when the DOM is completely loaded
  */
-document.addEventListener('DOMContentLoaded', function () {
-    if (document.cookie || Object.keys(localStorage).length > 0) {
-        setup()
-            .then(function (updated) {
-                if (updated) {
-                    var modal = document.getElementById("changeloggr");
-                    var closeModal = modal.querySelector(".close-button");
+document.addEventListener('DOMContentLoaded', async () => {
+    const scriptPath = getScriptPath();
+    const fileUrl = getURLParameter(scriptPath, 'file');
 
-                    modal.showModal();
-                    closeModal.addEventListener("click", function () {
-                        modal.close();
-                    });
-                }
-            })
-            .catch(function (error) {
-                console.error("Error loading resources:", error);
-            });
+    try {
+        const size = await getFileSize(fileUrl);
+        const changelogHash = localStorage.getItem('changelogHash');
+
+        if (!changelogHash || changelogHash !== size.toString()) {
+            const hasUpdated = await setup();
+
+            if (hasUpdated) {
+                const modal = document.getElementById('changeloggr');
+                const closeModal = modal.querySelector('.close-button');
+
+                modal.showModal();
+                closeModal.addEventListener('click', () => {
+                    modal.close();
+                });
+            }
+        }
+    } catch (error) {
+        console.error('Error loading resources:', error);
     }
 });
+
+/**
+ * Sets up the environment for the application.
+ *
+ * @return {boolean} Returns a boolean indicating whether the changelog has been updated.
+ */
+async function setup() {
+    const scriptPath = getScriptPath();
+    const path = scriptPath.replace(/[^/]*$/, '');
+    const file = getURLParameter(scriptPath, 'file');
+
+    if (!file) {
+        console.log('No changelog parameter specified');
+        throw new Error('No changelog parameter specified');
+    }
+
+    try {
+        await loadMarkedLibrary();
+        const theme = getThemeFromURL(scriptPath);
+        const stylesheet = createStylesheetLink(path, theme);
+        document.head.appendChild(stylesheet);
+
+        const [markedLoaded, templateResponse, changelogResponse] = await Promise.all([
+            loadMarkedLibrary(),
+            fetch(path + 'template.html').then(response => response.text()),
+            fetch(file).then(response => response.text())
+        ]);
+
+        const element = document.createElement('div');
+        element.innerHTML = templateResponse;
+        document.body.appendChild(element);
+
+        const changelogContentHtml = marked.parse(changelogResponse);
+        const changelogHash = hashString(changelogResponse);
+        const storedHash = localStorage.getItem('changelogHash');
+        const hasUpdated = changelogHash !== storedHash;
+
+        if (hasUpdated) {
+            localStorage.setItem('changelogHash', changelogHash);
+            const contentElement = document.querySelector('.content');
+            contentElement.innerHTML = changelogContentHtml;
+        }
+
+        return hasUpdated;
+    } catch (error) {
+        console.error('Error loading resources:', error);
+        return false;
+    }
+}
 
 /**
  * Removes the 'changelogHash' item from the localStorage.
@@ -32,70 +87,27 @@ function removeChangelogHash() {
 }
 
 /**
- * Executes the setup process.
+ * Retrieves the size of a file from a given URL.
  *
- * @return {Promise<boolean>} A Promise that resolves to a boolean indicating whether the setup process was successful.
+ * @param {string} url - The URL of the file to retrieve the size from.
+ * @return {Promise<number>} A promise that resolves to the size of the file as a number.
  */
-async function setup() {
-    var scriptPath = getScriptPath();
-    var path = scriptPath.replace(/[^/]*$/, '');
-    var file = getURLParameter(scriptPath, 'file');
-
-    if (!file) {
-        console.log('No changelog parameter specified');
-        return Promise.reject(new Error('No changelog parameter specified'));
-    }
-
-    // Load the marked library and CSS file
-    var markedPromise = loadMarkedLibrary();
-    var theme = getThemeFromURL(scriptPath);
-    var stylesheet = createStylesheetLink(path, theme);
-    document.head.appendChild(stylesheet);
-
-    // Fetch template.html and the changelog file
-    return Promise.all([
-        markedPromise,
-        fetch(path + 'template.html'),
-        fetch(file)
-    ]).then(function (responses) {
-        var markedLoaded = responses[0];
-        var templateResponse = responses[1];
-        var changelogResponse = responses[2];
-
-        return Promise.all([
-            markedLoaded,
-            templateResponse.text(),
-            changelogResponse.text()
-        ]);
-    }).then(function (results) {
-        var markedLoaded = results[0];
-        var templateHtml = results[1];
-        var changelogContent = results[2];
-        var element = document.createElement('div');
-        element.innerHTML = templateHtml;
-        document.body.appendChild(element);
-
-        // Parse the changelog file using marked
-        var changelogContentHtml = marked.parse(changelogContent);
-
-        // Check if the changelog content has changed
-        var changelogHash = hashString(changelogContent);
-        var storedHash = localStorage.getItem('changelogHash');
-        var hasUpdated = changelogHash !== storedHash;
-
-        if (hasUpdated) {
-            // Update the stored hash and show the changelog modal
-            localStorage.setItem('changelogHash', changelogHash);
-
-            var contentElement = document.querySelector(".content");
-            contentElement.innerHTML = changelogContentHtml;
-        }
-
-        return hasUpdated;
-    }).catch(function (error) {
-        console.error("Error loading resources:", error);
-        return false;
-    });
+async function getFileSize(url) {
+    return fetch(url, {
+        method: 'HEAD' // Utilizza il metodo HEAD per ottenere solo gli header senza il corpo del file
+    })
+        .then(response => {
+            const contentLength = response.headers.get('content-length');
+            if (contentLength) {
+                return parseInt(contentLength, 10); // Restituisce la dimensione del file come numero intero
+            } else {
+                throw new Error('Content-Length header not found in the response.');
+            }
+        })
+        .catch(error => {
+            console.error('Error fetching file size:', error);
+            // Gestire eventuali errori di rete o altre eccezioni
+        });
 }
 
 /**

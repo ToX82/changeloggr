@@ -1,7 +1,30 @@
-Changeloggr test!
+<html>
+<head>
+    <style>
+        body {
+            background: url(https://wallpapercave.com/wp/9gAmpUH.jpg);
+            background-size: cover;
+            color: #fafafa;
+            font-family:'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+        }
+        h1,
+        h4,
+        p {
+            text-shadow: 0 0 5px rgba(0, 0, 0, 0.6);
+        }
+    </style>
+</head>
+<body>
+    <h1>Changeloggr!</h1>
 
-Vuoi rivedere la modal? Aggiorna il file log.txt, oppure clicca
-<a href="javascript:;" onclick="removeChangelogHash()">qui</a>
+    <p>Changeloggr is a simple tool.</p>
+    <p>You can use it to display a changelog of your project</p>
+    <p>Just load the changeloggr.js library, set the path of your changelog file, and that's it.</p>
+    <p>It will display the changelog only once. When the user closes it, it won't be shown until the next time the changelog itself gets changed.</p>
+    
+    <h4>Do you want to see the changelog again? Please click <a href="javascript:;" onclick="removeChangelogHash()">here</a></h4>
+    
 
-
-<script src="changeloggr.js?file=log.txt"></script>
+    <script src="changeloggr.js?file=CHANGELOG.md"></script>
+</body>
+</html>

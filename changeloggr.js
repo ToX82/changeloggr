@@ -19,7 +19,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
             if (hasLoaded) {
                 const modal = document.getElementById('changeloggr');
-                const closeModal = modal.getElementById('changeloggr-close');
+                const closeModal = document.querySelector('.changeloggr-close');
 
                 modal.showModal();
                 closeModal.addEventListener('click', () => {
@@ -55,11 +55,12 @@ async function setup() {
         ]);
 
         const element = document.createElement('div');
+        element.setAttribute('id', 'changeloggr-container');
         element.innerHTML = templateResponse;
         document.body.appendChild(element);
 
         const changelogContentHtml = marked.parse(changelogResponse);
-        const contentElement = document.getElementById('changeloggr-content');
+        const contentElement = document.querySelector('.changeloggr-content');
         contentElement.innerHTML = changelogContentHtml;
 
         return true;

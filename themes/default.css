@@ -30,16 +30,17 @@
 #changeloggr h1 {
     margin: 0 0 10px;
 }
-#changeloggr-close {
+.changeloggr-close {
     cursor: pointer;
-    position: absolute;
+    position: sticky;
     top: 5px;
-    right: 15px;
+    float: right;
     border: none;
     background: none;
     font-size: 200%;
+    right: 10px;
 }
-#changeloggr-content {
+.changeloggr-content {
     width: 100%;
     box-sizing: border-box;
     color: var(--log-text);

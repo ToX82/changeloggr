@@ -56,12 +56,18 @@ async function setup() {
 
         const element = document.createElement('div');
         element.setAttribute('id', 'changeloggr-container');
-        element.innerHTML = templateResponse;
-        document.body.appendChild(element);
 
-        const changelogContentHtml = marked.parse(changelogResponse);
-        const contentElement = document.querySelector('.changeloggr-content');
-        contentElement.innerHTML = changelogContentHtml;
+        if (templateResponse) {
+            element.innerHTML = templateResponse;
+            document.body.appendChild(element);
+
+            const changelogContentHtml = marked.parse(changelogResponse);
+            const contentElement = document.querySelector('.changeloggr-content');
+            contentElement.innerHTML = changelogContentHtml;
+        } else {
+            console.error('Template response is null or undefined');
+            return false;
+        }
 
         return true;
     } catch (error) {

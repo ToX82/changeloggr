@@ -30,7 +30,7 @@
 #changeloggr h1 {
     margin: 0 0 10px;
 }
-#changeloggr .close-button {
+#changeloggr-close {
     cursor: pointer;
     position: absolute;
     top: 5px;
@@ -39,7 +39,7 @@
     background: none;
     font-size: 200%;
 }
-#changeloggr .content {
+#changeloggr-content {
     width: 100%;
     box-sizing: border-box;
     color: var(--log-text);

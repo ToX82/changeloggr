@@ -59,7 +59,7 @@ async function setup() {
         document.body.appendChild(element);
 
         const changelogContentHtml = marked.parse(changelogResponse);
-        const contentElement = document.querySelector('.content');
+        const contentElement = document.querySelector('.changeloggr-content');
         contentElement.innerHTML = changelogContentHtml;
 
         return true;

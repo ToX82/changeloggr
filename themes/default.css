@@ -1,14 +1,14 @@
 #changeloggr {
-    --bg: rgb(255 255 255 / 60%);
+    --bg: rgb(255 255 255 / 70%);
     --text: #2c2c2c;
-    --log-bg: #F5F5F5;
     --log-text: #2c2c2c;
     --log-links: #2a01ac;
 }
 
 #changeloggr {
+    font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
     background-color: var(--bg);
-    color: var(--dark-gray);
+    color: var(--text);
     width: 800px;
     max-width: 90vw;
     height: 800px;
@@ -22,10 +22,9 @@
 }
 #changeloggr * {
     text-shadow: none;
-    font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
 }
 #changeloggr::backdrop {
-  background: rgb(0 0 0 / 0.5);
+  background: rgb(255 255 255 / 0.5);
 }
 #changeloggr h1 {
     margin: 0 0 10px;
